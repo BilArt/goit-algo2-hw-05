@@ -22,12 +22,12 @@ class BloomFilter:
 def check_password_uniqueness(bloom_filter, passwords):
     result = {}
     for password in passwords:
-        if not isintance(password, str) or not password:
-            result[password] = "Деяке значення"
-        elif bloom_filter.containst(password):
-            result[password] = "Вже використаний"
+        if not isinstance(password, str) or not password:
+            result[password] = "Некорректное значение"
+        elif bloom_filter.contains(password):
+            result[password] = "уже использованный"
         else:
-            result[password] = "Унікальний"
+            result[password] = "уникальный"
             bloom_filter.add(password)
     return result
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
         bloom.add(password)
 
     new_passwords_to_check = ["password123", "newpassword", "admin123", "guest"]
-    result = cheack_password_uniqueness(bloom, new_passwords_to_check)
+    result = check_password_uniqueness(bloom, new_passwords_to_check)
 
-    for password, status in results.items():
+    for password, status in result.items():
         print(f"Пароль '{password}' - {status}.")
