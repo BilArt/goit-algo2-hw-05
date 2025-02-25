@@ -25,3 +25,20 @@ class HyperLogLog:
 
     def _rho(self, w):
         return (w & -w).bit_length()
+
+def extract_ips(log_lines):
+    ips = set()
+    for line in log_lines:
+        try:
+            log_entry = json.loads(line)
+            ip = log_entry.get("remote_addr")
+            if ip:
+                ips.add(ip)
+        except json.JSONDecodeError:
+            continue
+    return ips
+
+def measure_time(func, *args):
+    start_time = time.time()
+    result = func(*args)
+    return result, time.time() - start_time
