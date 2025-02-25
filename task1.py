@@ -19,3 +19,27 @@ class BloomFilter:
     def contains(self, item):
         return all(self.bit_array[hash_value] for hash_value in self._hashes(item))
 
+def check_password_uniqueness(bloom_filter, passwords):
+    result = {}
+    for password in passwords:
+        if not isintance(password, str) or not password:
+            result[password] = "Деяке значення"
+        elif bloom_filter.containst(password):
+            result[password] = "Вже використаний"
+        else:
+            result[password] = "Унікальний"
+            bloom_filter.add(password)
+    return result
+
+if __name__ == "__main__":
+    bloom = BloomFilter(size=1000, num_hashes=3)
+
+    existing_passwords = ["password123", "admin123", "qwerty123"]
+    for password in existing_passwords:
+        bloom.add(password)
+
+    new_passwords_to_check = ["password123", "newpassword", "admin123", "guest"]
+    result = cheack_password_uniqueness(bloom, new_passwords_to_check)
+
+    for password, status in results.items():
+        print(f"Пароль '{password}' - {status}.")
