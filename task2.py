@@ -42,3 +42,29 @@ def measure_time(func, *args):
     start_time = time.time()
     result = func(*args)
     return result, time.time() - start_time
+
+if __name__ == "__main__":
+    log_data = [
+        '{ "timestamp": "2024-07-29T06:25:06+03:00", "remote_addr": "80.211.38.60" }',
+        '{ "timestamp": "2024-07-29T06:25:32+03:00", "remote_addr": "80.211.111.215" }',
+        '{ "timestamp": "2024-07-29T06:25:33+03:00", "remote_addr": "80.211.38.60" }',
+        '{ "timestamp": "2024-07-29T06:25:36+03:00", "remote_addr": "80.211.38.60" }',
+        '{ "timestamp": "2024-07-29T06:25:43+03:00", "remote_addr": "80.211.38.60" }'
+    ]
+    
+    unique_ips, exact_time = measure_time(extract_ips, log_data)
+    exact_count = len(unique_ips)
+    
+    hll = HyperLogLog(p=14)
+    for ip in unique_ips:
+        hll.add(ip)
+    hll_count, hll_time = measure_time(hll.count)
+    
+    results_df = pd.DataFrame({
+        "Метод": ["Точный подсчет", "HyperLogLog"],
+        "Уникальные элементы": [exact_count, hll_count],
+        "Время выполнения (сек.)": [exact_time, hll_time]
+    })
+    
+    import ace_tools as tools
+    tools.display_dataframe_to_user(name="Сравнение точности и скорости", dataframe=results_df)
